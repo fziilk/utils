@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import shutil
 
 
 def detect_outliers(df):
@@ -39,3 +40,46 @@ def clean_dataset(df):
         col_median = df[o_col].median()
 
         df[o_col] = df[o_col].replace(to_replace=outlier_values, value=col_median)
+        
+def merge_images(parent_dir):
+    """
+    input tree directory:
+    > parent_dir
+        > class 1
+            > image 1
+            > image 2
+            > image n
+        > class 2
+            > image 1
+            > image 2
+            > image n
+        > class n
+            > image 1
+            > image 2
+            > image n
+
+    output tree directory:
+    > parent_dir
+        > image 1
+        > image 2
+        > image 3
+        > image 4
+        > image 5
+        > image 6
+        > image 7
+        > image 8
+        > image n
+    """
+    classes = os.listdir(parent_dir)
+
+    for subdir in classes:
+        images = os.listdir(os.path.join(parent_dir, subdir))
+
+        for image in images:
+            try:
+                print(f"moving \"{image}\"...")
+                shutil.move(os.path.join(parent_dir, subdir, image), parent_dir)
+            except Exception:
+                pass
+
+        shutil.rmtree(os.path.join(parent_dir, subdir))
